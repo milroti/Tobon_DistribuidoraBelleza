@@ -22,8 +22,8 @@ export async function login(
   formData: FormData
 ): Promise<LoginState> {
   const raw = {
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
+    email: ((formData.get("email") as string) ?? "").trim(),
+    password: (formData.get("password") as string) ?? "",
   };
 
   const parsed = loginSchema.safeParse(raw);
@@ -31,21 +31,38 @@ export async function login(
     return { fieldErrors: parsed.error.flatten().fieldErrors };
   }
 
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
-
-  if (error) {
-    console.error("[auth] login error:", error.message, error.status, error);
-
-    // Distinguish between credential errors and server errors
-    if (error.status === 400) {
-      return { error: "Credenciales incorrectas. Intenta de nuevo." };
-    }
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()
+  ) {
     return {
       error:
-        process.env.NODE_ENV === "development"
-          ? `Error del servidor (${error.status}): ${error.message}`
-          : "Error del servidor. Intenta más tarde.",
+        "Faltan las variables NEXT_PUBLIC_SUPABASE_URL o NEXT_PUBLIC_SUPABASE_ANON_KEY en el servidor (Vercel).",
+    };
+  }
+
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signInWithPassword(parsed.data);
+
+    if (error) {
+      console.error("[auth] login error:", error.message, error.status, error);
+
+      if (
+        error.status === 400 ||
+        error.message.toLowerCase().includes("invalid login credentials")
+      ) {
+        return { error: "Credenciales incorrectas. Intenta de nuevo." };
+      }
+      return {
+        error: `Error de autenticación (${error.status ?? "red"}): ${error.message}`,
+      };
+    }
+  } catch (err) {
+    console.error("[auth] unexpected exception during login:", err);
+    return {
+      error:
+        "No se pudo conectar con Supabase. Verifica NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY en Vercel.",
     };
   }
 

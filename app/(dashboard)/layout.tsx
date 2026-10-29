@@ -19,6 +19,13 @@ function DashboardFallback() {
 }
 
 async function DashboardShell({ children }: { children: React.ReactNode }) {
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()
+  ) {
+    redirect("/login");
+  }
+
   const supabase = await createClient();
 
   const {
