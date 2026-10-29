@@ -479,7 +479,8 @@ export async function getCustomers(opts?: {
     .range(from, to);
 
   if (opts?.search?.trim()) {
-    const q = opts.search.trim();
+    // Strip PostgREST filter metacharacters (comma, parens) to prevent OR-clause injection
+    const q = opts.search.trim().replace(/[,()]/g, "");
     query = query.or(
       `first_name.ilike.%${q}%,last_name.ilike.%${q}%,cedula.ilike.%${q}%,phone.ilike.%${q}%`
     );

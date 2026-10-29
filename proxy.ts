@@ -1,19 +1,5 @@
-import { updateSession } from "@/lib/supabase/middleware";
-import type { NextRequest } from "next/server";
-
-export async function proxy(request: NextRequest) {
-  return await updateSession(request);
-}
-
-export const config = {
-  matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static, _next/image (Next.js internals)
-     * - favicon.ico, manifest.json, sw.js, icons (static PWA assets)
-     * - API routes that handle their own auth
-     */
-    "/((?!_next/static|_next/image|favicon\\.ico|manifest\\.json|sw\\.js|icons/).*)",
-  ],
-};
-
+// This file is superseded by middleware.ts.
+// Next.js requires the root middleware file to be named exactly "middleware.ts"
+// and to export a function named "middleware". This file was previously named
+// incorrectly, causing the entire auth guard to be dead code.
+// Keep this file empty to avoid accidental re-use.

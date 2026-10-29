@@ -533,8 +533,10 @@ export async function getProducts(opts?: {
   }
 
   if (opts?.search) {
+    // Strip PostgREST filter metacharacters (comma, parens) to prevent OR-clause injection
+    const safe = opts.search.replace(/[,()]/g, "");
     query = query.or(
-      `name.ilike.%${opts.search}%,brand.ilike.%${opts.search}%,barcode.eq.${opts.search}`
+      `name.ilike.%${safe}%,brand.ilike.%${safe}%,barcode.eq.${safe}`
     );
   }
 

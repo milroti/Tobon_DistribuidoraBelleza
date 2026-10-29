@@ -99,7 +99,7 @@ export function CustomerForm({
           cedula: trimmedCedula,
           phone: formattedPhone,
           email: email.trim() || null,
-          consent_accepted: true,
+          consent_accepted: consentAccepted,
         });
 
         if (!res.success) {

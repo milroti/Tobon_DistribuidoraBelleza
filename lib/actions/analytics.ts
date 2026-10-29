@@ -112,9 +112,22 @@ export async function getAnalyticsDashboard(opts?: {
   to?: string;
 }): Promise<AnalyticsDashboardData> {
   await connection();
+  const supabase = await createClient();
+
+  // Auth guard — admin only (Server Actions bypass route-level middleware)
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("No autenticado");
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single() as { data: { role: string } | null };
+  if (!profile || profile.role !== "admin") {
+    throw new Error("Solo administradores pueden ver las analíticas");
+  }
+
   const period = opts?.period ?? "month";
   const { fromIso, toIso } = resolveDateRange(period, opts?.from, opts?.to);
-  const supabase = await createClient();
 
   const [
     topRes,

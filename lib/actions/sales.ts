@@ -226,14 +226,12 @@ export async function completeSale(input: {
       .single();
 
     if (stockError || !updatedProduct) {
-      // Rollback any already-decremented products
+      // Rollback any already-decremented products using relative increment
       for (const prev of decrementedItems) {
-        await (admin.from("products") as any)
-          .update({
-            stock: prev.previousStock,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", prev.product_id);
+        await (admin as any).rpc("increment_stock", {
+          p_product_id: prev.product_id,
+          p_delta: prev.quantity,
+        });
       }
       return {
         success: false,
@@ -263,14 +261,12 @@ export async function completeSale(input: {
     .single() as { data: Sale | null; error: { message: string } | null };
 
   if (saleError || !sale) {
-    // Rollback stock decrements
+    // Rollback stock decrements using relative increment
     for (const prev of decrementedItems) {
-      await (admin.from("products") as any)
-        .update({
-          stock: prev.previousStock,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", prev.product_id);
+      await (admin as any).rpc("increment_stock", {
+        p_product_id: prev.product_id,
+        p_delta: prev.quantity,
+      });
     }
     console.error("completeSale insert error:", saleError);
     return { success: false, error: "Error al registrar la venta" };
@@ -288,15 +284,13 @@ export async function completeSale(input: {
     .select() as { data: SaleItem[] | null; error: { message: string } | null };
 
   if (itemsError) {
-    // Compensation: remove the orphaned sale and restore stock
+    // Compensation: remove the orphaned sale and restore stock using relative increment
     await admin.from("sales").delete().eq("id", sale.id);
     for (const prev of decrementedItems) {
-      await (admin.from("products") as any)
-        .update({
-          stock: prev.previousStock,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", prev.product_id);
+      await (admin as any).rpc("increment_stock", {
+        p_product_id: prev.product_id,
+        p_delta: prev.quantity,
+      });
     }
     console.error("completeSale items error:", itemsError);
     return { success: false, error: "Error al registrar los productos de la venta" };
@@ -387,22 +381,12 @@ export async function voidSale(
     return { success: false, error: "Error al anular la venta" };
   }
 
-  // 5. Restore stock for each item
+  // 5. Restore stock for each item using atomic relative increment
   for (const item of saleItems) {
-    const { data: product } = await admin
-      .from("products")
-      .select("stock")
-      .eq("id", item.product_id)
-      .single() as { data: { stock: number } | null };
-
-    if (product) {
-      await (admin.from("products") as any)
-        .update({
-          stock: product.stock + item.quantity,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", item.product_id);
-    }
+    await (admin as any).rpc("increment_stock", {
+      p_product_id: item.product_id,
+      p_delta: item.quantity,
+    });
   }
 
   // 6. Audit log
@@ -517,8 +501,10 @@ export async function searchCustomers(
     .limit(10);
 
   if (trimmed) {
+    // Strip PostgREST filter metacharacters (comma, parens) to prevent OR-clause injection
+    const safe = trimmed.replace(/[,()]/g, "");
     dbQuery = dbQuery.or(
-      `first_name.ilike.%${trimmed}%,last_name.ilike.%${trimmed}%,cedula.ilike.%${trimmed}%,phone.ilike.%${trimmed}%`
+      `first_name.ilike.%${safe}%,last_name.ilike.%${safe}%,cedula.ilike.%${safe}%,phone.ilike.%${safe}%`
     );
   }
 
