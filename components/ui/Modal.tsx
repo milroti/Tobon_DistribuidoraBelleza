@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
 
@@ -28,8 +28,14 @@ export function Modal({
   closeOnOverlay = true,
 }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     const dialog = dialogRef.current;
     if (!dialog) return;
 
@@ -38,19 +44,20 @@ export function Modal({
     } else if (!open && dialog.open) {
       dialog.close();
     }
-  }, [open]);
+  }, [open, mounted]);
 
   // Close on Escape is handled natively by <dialog>
   useEffect(() => {
+    if (!mounted) return;
     const dialog = dialogRef.current;
     if (!dialog) return;
 
     const handleClose = () => onClose();
     dialog.addEventListener("close", handleClose);
     return () => dialog.removeEventListener("close", handleClose);
-  }, [onClose]);
+  }, [onClose, mounted]);
 
-  if (typeof window === "undefined") return null;
+  if (!mounted) return null;
 
   return createPortal(
     <dialog

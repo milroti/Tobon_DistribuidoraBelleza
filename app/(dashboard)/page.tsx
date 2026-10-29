@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { Icon } from "@/components/ui/Icon";
 import { formatCOP } from "@/lib/utils/currency";
@@ -10,6 +11,7 @@ interface SaleWithItemQuantities extends Sale {
 }
 
 export default async function DashboardHomePage() {
+  await connection();
   const supabase = await createClient();
 
   const now = new Date();

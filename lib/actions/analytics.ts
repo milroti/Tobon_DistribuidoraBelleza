@@ -1,5 +1,6 @@
 "use server";
 
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type {
   TopProduct,
@@ -110,6 +111,7 @@ export async function getAnalyticsDashboard(opts?: {
   from?: string;
   to?: string;
 }): Promise<AnalyticsDashboardData> {
+  await connection();
   const period = opts?.period ?? "month";
   const { fromIso, toIso } = resolveDateRange(period, opts?.from, opts?.to);
   const supabase = await createClient();
