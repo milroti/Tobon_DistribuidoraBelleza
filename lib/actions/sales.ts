@@ -128,13 +128,22 @@ export async function completeSale(input: {
 
   const admin = createAdminClient();
 
-  // 3. Get next receipt number from sequence
-  const { data: receiptNumber, error: receiptError } = await admin.rpc(
+  // 3. Get next receipt number from sequence (with fallback to max + 1)
+  let receiptNumber: number | null = null;
+  const { data: rpcReceiptNumber, error: receiptError } = await admin.rpc(
     "get_next_receipt_number"
   );
-  if (receiptError || receiptNumber === null) {
-    console.error("Receipt number error:", receiptError);
-    return { success: false, error: "Error al generar número de recibo" };
+  if (!receiptError && typeof rpcReceiptNumber === "number") {
+    receiptNumber = rpcReceiptNumber;
+  } else {
+    console.warn("RPC get_next_receipt_number fallback:", receiptError);
+    const { data: lastSale } = (await admin
+      .from("sales")
+      .select("receipt_number")
+      .order("receipt_number", { ascending: false })
+      .limit(1)
+      .maybeSingle()) as { data: { receipt_number: number } | null };
+    receiptNumber = lastSale?.receipt_number ? lastSale.receipt_number + 1 : 1000;
   }
 
   // Consolidate duplicate product_ids if present
