@@ -211,7 +211,7 @@ export async function completeSale(input: {
 
   // 7. Decrement stock atomically per item with concurrency guard (stock >= quantity)
   // If any update returns 0 rows (concurrent sale depleted stock), rollback previous decrements
-  const decrementedItems: { product_id: string; previousStock: number }[] = [];
+  const decrementedItems: { product_id: string; previousStock: number; quantity: number }[] = [];
   for (const item of normalizedItems) {
     const product = productMap.get(item.product_id)!;
     const { data: updatedProduct, error: stockError } = await (admin
@@ -242,6 +242,7 @@ export async function completeSale(input: {
     decrementedItems.push({
       product_id: item.product_id,
       previousStock: product.stock,
+      quantity: item.quantity,
     });
   }
 
