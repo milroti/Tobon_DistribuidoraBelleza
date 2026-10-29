@@ -1,26 +1,135 @@
 @import "tailwindcss";
+@source "../components/**/*.tsx";
+@source "../lib/**/*.ts";
+@source "../app/**/*.tsx";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─── Colores: @theme extend para NO reemplazar defaults de Tailwind ─── */
+@theme extend {
+  /* ─── Paleta primaria (Deep Rose) ─── */
+  --color-primary: #951753;
+  --color-primary-container: #b5336b;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #ffdce5;
+  --color-inverse-primary: #ffb0c9;
+  --color-primary-fixed: #ffd9e2;
+  --color-primary-fixed-dim: #ffb0c9;
+  --color-on-primary-fixed: #3e001e;
+  --color-on-primary-fixed-variant: #8b0b4b;
+
+  /* ─── Paleta secundaria (Champagne Gold) ─── */
+  --color-secondary: #7b5804;
+  --color-secondary-container: #fdcd74;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #785601;
+  --color-secondary-fixed: #ffdea6;
+  --color-secondary-fixed-dim: #eec068;
+  --color-on-secondary-fixed: #271900;
+  --color-on-secondary-fixed-variant: #5d4200;
+
+  /* ─── Paleta terciaria ─── */
+  --color-tertiary: #554b4e;
+  --color-tertiary-container: #6e6366;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #efe1e4;
+  --color-tertiary-fixed: #eddfe2;
+  --color-tertiary-fixed-dim: #d1c3c6;
+  --color-on-tertiary-fixed: #211a1c;
+  --color-on-tertiary-fixed-variant: #4e4447;
+
+  /* ─── Superficies ─── */
+  --color-surface: #fcf9f8;
+  --color-surface-dim: #dcd9d9;
+  --color-surface-bright: #fcf9f8;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f6f3f2;
+  --color-surface-container: #f0eded;
+  --color-surface-container-high: #eae7e7;
+  --color-surface-container-highest: #e4e2e1;
+  --color-on-surface: #1b1c1c;
+  --color-on-surface-variant: #564147;
+  --color-inverse-surface: #303030;
+  --color-inverse-on-surface: #f3f0f0;
+  --color-surface-tint: #ab2b63;
+  --color-surface-variant: #e4e2e1;
+  --color-background: #fcf9f8;
+  --color-on-background: #1b1c1c;
+
+  /* ─── Contornos ─── */
+  --color-outline: #897177;
+  --color-outline-variant: #ddbfc6;
+
+  /* ─── Error / Semánticos ─── */
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  /* ─── Semánticos extendidos (brand) ─── */
+  --color-success: #10b981;
+  --color-success-light: #ecfdf5;
+  --color-success-text: #065f46;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fffbeb;
+  --color-warning-text: #92400e;
+  --color-danger: #e11d48;
+  --color-danger-light: #fff1f2;
+  --color-danger-text: #be123c;
+
+  /* ─── Aliases semánticos para componentes ─── */
+  --color-foreground: #1b1c1c;
+  --color-muted: #897177;
+  --color-border: #ddbfc6;
+  --color-primary-hover: #8b0b4b;
+  --color-input: #f6f3f2;
+  --color-ring: #951753;
+  --color-card: #ffffff;
+  --color-card-foreground: #1b1c1c;
+  --color-muted-foreground: #564147;
+  --color-accent: #f0eded;
+  --color-accent-foreground: #1b1c1c;
+  --color-destructive: #ba1a1a;
+  --color-destructive-foreground: #ffffff;
+
+  /* ─── Tipografía ─── */
+  --font-heading: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  /* ─── Espaciado custom (se suman a los defaults numéricos) ─── */
+  --spacing-gutter: 1.25rem;
+  --spacing-gutter-mobile: 0.75rem;
+  --spacing-margin: 2rem;
+  --spacing-margin-mobile: 1rem;
+
+  /* ─── Radios custom (se suman a los defaults) ─── */
+  --radius-DEFAULT: 0.5rem;
+
+  /* ─── Sombras custom (se suman a los defaults) ─── */
+  --shadow-card: 0 4px 20px -2px rgba(181, 51, 107, 0.05);
+  --shadow-dropdown: 0 12px 32px -4px rgba(45, 45, 45, 0.08);
+  --shadow-modal: 0 24px 48px -8px rgba(45, 45, 45, 0.12);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ─── Reset base ─── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* ─── Animaciones ─── */
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }

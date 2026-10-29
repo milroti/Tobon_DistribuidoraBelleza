@@ -1,0 +1,69 @@
+{
+  "id": "/",
+  "name": "Tobón Distribuidora de Belleza",
+  "short_name": "Tobón",
+  "description": "Sistema de gestión de inventario y punto de venta — Velvet Commerce",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fcf9f8",
+  "theme_color": "#951753",
+  "lang": "es-CO",
+  "categories": ["business", "shopping", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nueva Venta (POS)",
+      "short_name": "POS",
+      "description": "Abrir Punto de Venta",
+      "url": "/ventas",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Inventario",
+      "short_name": "Inventario",
+      "description": "Consultar catálogo de productos",
+      "url": "/inventario",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Nuevo Cliente",
+      "short_name": "Cliente",
+      "description": "Registrar nuevo cliente",
+      "url": "/clientes/nuevo",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}
