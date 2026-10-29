@@ -27,72 +27,77 @@ export function Modal({
   size = "md",
   closeOnOverlay = true,
 }: ModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Lock body scroll and handle Escape key when open
   useEffect(() => {
-    if (!mounted) return;
-    const dialog = dialogRef.current;
-    if (!dialog) return;
+    if (!mounted || !open) return;
 
-    if (open && !dialog.open) {
-      dialog.showModal();
-    } else if (!open && dialog.open) {
-      dialog.close();
-    }
-  }, [open, mounted]);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
-  // Close on Escape is handled natively by <dialog>
-  useEffect(() => {
-    if (!mounted) return;
-    const dialog = dialogRef.current;
-    if (!dialog) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
 
-    const handleClose = () => onClose();
-    dialog.addEventListener("close", handleClose);
-    return () => dialog.removeEventListener("close", handleClose);
-  }, [onClose, mounted]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, mounted, onClose]);
 
-  if (!mounted) return null;
+  if (!mounted || !open) return null;
 
   return createPortal(
-    <dialog
-      ref={dialogRef}
-      className={`
-        ${sizeStyles[size]} w-[calc(100%-2rem)] p-0 m-auto
-        bg-surface-container-lowest rounded-2xl
-        shadow-[0_24px_48px_-8px_rgba(45,45,45,0.12)]
-        backdrop:bg-black/40 backdrop:backdrop-blur-sm
-        open:animate-[modal-in_200ms_ease-out]
-      `}
-      onClick={(e) => {
-        if (closeOnOverlay && e.target === dialogRef.current) onClose();
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+      onMouseDown={(e) => {
+        if (closeOnOverlay && e.target === e.currentTarget) {
+          onClose();
+        }
       }}
     >
-      {/* Header */}
-      {title && (
-        <div className="flex items-center justify-between px-6 pt-6 pb-2">
-          <h2 className="text-lg font-heading font-semibold text-on-surface">
-            {title}
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors"
-            aria-label="Cerrar"
-          >
-            <Icon name="close" size={20} />
-          </button>
-        </div>
-      )}
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className={`
+          ${sizeStyles[size]} w-full max-h-[90vh] overflow-y-auto
+          bg-surface-container-lowest rounded-2xl
+          shadow-[0_24px_48px_-8px_rgba(45,45,45,0.12)]
+          animate-[modal-in_200ms_ease-out]
+        `}
+      >
+        {/* Header */}
+        {title && (
+          <div className="flex items-center justify-between px-6 pt-6 pb-2">
+            <h2 className="text-lg font-heading font-semibold text-on-surface">
+              {title}
+            </h2>
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1 rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors cursor-pointer"
+              aria-label="Cerrar"
+            >
+              <Icon name="close" size={20} />
+            </button>
+          </div>
+        )}
 
-      {/* Body */}
-      <div className={title ? "px-6 pb-6 pt-2" : "p-6"}>{children}</div>
-    </dialog>,
+        {/* Body */}
+        <div className={title ? "px-6 pb-6 pt-2" : "p-6"}>{children}</div>
+      </div>
+    </div>,
     document.body,
   );
 }

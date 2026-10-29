@@ -4,6 +4,9 @@ import type { Database } from "@/lib/types/database";
 
 export async function createClient() {
   const cookieStore = await cookies();
+  // Read cookies before initializing Supabase so Next.js marks the context as dynamic
+  // prior to GoTrueClient calling Date.now() internally.
+  cookieStore.getAll();
 
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

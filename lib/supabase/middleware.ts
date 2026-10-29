@@ -46,6 +46,7 @@ export async function updateSession(request: NextRequest) {
   if (
     user &&
     (pathname.startsWith("/analiticas") ||
+      pathname.startsWith("/usuarios") ||
       pathname.startsWith("/configuracion"))
   ) {
     const { data: profile } = (await supabase
@@ -56,7 +57,7 @@ export async function updateSession(request: NextRequest) {
 
     if (profile?.role !== "admin") {
       const url = request.nextUrl.clone();
-      url.pathname = "/pos";
+      url.pathname = "/";
       return NextResponse.redirect(url);
     }
   }

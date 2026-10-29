@@ -1,4 +1,9 @@
-const CACHE_NAME = "tobon-pwa-v1";
+const CACHE_NAME = "tobon-pwa-v2";
+const IS_LOCAL_DEV =
+  self.location.hostname === "localhost" ||
+  self.location.hostname === "127.0.0.1" ||
+  self.location.hostname.startsWith("192.168.");
+
 const PRECACHE_ASSETS = [
   "/manifest.json",
   "/icons/icon-192.png",
@@ -9,6 +14,10 @@ const PRECACHE_ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
+  if (IS_LOCAL_DEV) {
+    self.skipWaiting();
+    return;
+  }
   event.waitUntil(
     caches
       .open(CACHE_NAME)
@@ -18,6 +27,15 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
+  if (IS_LOCAL_DEV) {
+    event.waitUntil(
+      caches
+        .keys()
+        .then((cacheNames) => Promise.all(cacheNames.map((n) => caches.delete(n))))
+        .then(() => self.registration.unregister())
+    );
+    return;
+  }
   event.waitUntil(
     caches
       .keys()
@@ -33,6 +51,10 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  if (IS_LOCAL_DEV) {
+    return;
+  }
+
   const { request } = event;
 
   // Only handle GET requests

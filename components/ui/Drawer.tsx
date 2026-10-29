@@ -77,9 +77,9 @@ export function Drawer({
           ${
             side === "bottom"
               ? `inset-x-0 bottom-0 rounded-t-2xl max-h-[85vh] overflow-y-auto
-                 ${open ? "translate-y-0" : "translate-y-full"}`
+                 ${open ? "translate-y-0" : "translate-y-full pointer-events-none"}`
               : `top-0 right-0 h-full w-full max-w-96 overflow-y-auto
-                 ${open ? "translate-x-0" : "translate-x-full"}`
+                 ${open ? "translate-x-0" : "translate-x-full pointer-events-none"}`
           }
         `}
       >

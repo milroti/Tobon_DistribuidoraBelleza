@@ -51,7 +51,7 @@ export default function LoginPage() {
                 <Icon
                   name="mail"
                   size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted"
                 />
                 <input
                   id="email"
@@ -60,7 +60,7 @@ export default function LoginPage() {
                   autoComplete="email"
                   required
                   placeholder="tu@correo.com"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-surface-container-lowest text-on-surface placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                 />
               </div>
               {state.fieldErrors?.email && (
@@ -82,7 +82,7 @@ export default function LoginPage() {
                 <Icon
                   name="lock"
                   size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted"
                 />
                 <input
                   id="password"
@@ -91,7 +91,7 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   required
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-background text-foreground placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-surface-container-lowest text-on-surface placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                 />
               </div>
               {state.fieldErrors?.password && (

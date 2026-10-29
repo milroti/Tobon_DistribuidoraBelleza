@@ -20,6 +20,7 @@ const navItems: NavItem[] = [
   { href: "/inventario", label: "Inventario", icon: "inventory_2" },
   { href: "/clientes", label: "Clientes", icon: "people" },
   { href: "/analiticas", label: "Analíticas", icon: "analytics", adminOnly: true },
+  { href: "/usuarios", label: "Usuarios", icon: "manage_accounts", adminOnly: true },
 ];
 
 interface TopBarProps {
