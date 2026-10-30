@@ -155,7 +155,8 @@ async function getRequestIp(): Promise<string | null> {
     const hdrs = await headers();
     const forwardedFor = hdrs.get("x-forwarded-for");
     if (forwardedFor) {
-      return forwardedFor.split(",")[0].trim();
+      const ips = forwardedFor.split(",").map((s) => s.trim()).filter(Boolean);
+      return ips[ips.length - 1] ?? null;
     }
     return hdrs.get("x-real-ip") ?? null;
   } catch {
